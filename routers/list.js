@@ -33,6 +33,9 @@ router.get("/get_latest_list", async (req, res) => {
     try {
         console.log("get_latest_list");
         const latestList = await prisma.task.findMany({
+            where: {
+                eatflag: false,
+            },
             take: 10,
             orderBy: { createdAt: "desc" },
         });
@@ -63,6 +66,26 @@ router.post("/update", isAuthenticated, async (req, res) => {
     }
 });
 
+// タスクチェック用API
+router.post("/check", isAuthenticated, async (req, res) => {
+    try {
+        console.log("check",req.body);
+        const newCheck = await prisma.task.update({
+            where: {
+                id: Number(req.body.id),
+            },
+            data: {
+                eatflag: Boolean(req.body.eatflag),
+            },
+        });
+
+        res.status(201).json(newCheck);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "サーバーエラーです。" });
+    }
+});
+
 // タスク削除用API
 router.post("/delete", isAuthenticated, async (req, res) => {
     try {
@@ -80,3 +103,20 @@ router.post("/delete", isAuthenticated, async (req, res) => {
     }
 });
 module.exports = router;
+
+// タスクコンプリート用API
+router.post("/complete", isAuthenticated, async (req, res) => {
+    try {
+        console.log("complete",req.body);
+        const newComplete = await prisma.task.updateMany({
+            data: {
+                eatflag: Boolean(req.body.eatflag),
+            },
+        });
+
+        res.status(201).json(newComplete);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "サーバーエラーです。" });
+    }
+});
