@@ -36,7 +36,6 @@ router.get("/get_latest_list", async (req, res) => {
             where: {
                 eatflag: false,
             },
-            take: 10,
             orderBy: { createdAt: "desc" },
         });
         console.log(latestList);
